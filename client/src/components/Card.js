@@ -18,10 +18,10 @@ const Emoji = styled.img`
   padding-top: 16px;
 `;
 
-export const Card = ({ emoji, title }) => {
+export const Card = ({ title, emojiUrl }) => {
   return (
     <CardWrapper>
-      <Emoji src={emoji} />
+      <Emoji src={emojiUrl} />
       <TextContainer>
         <h4>{title}</h4>
       </TextContainer>
@@ -29,4 +29,4 @@ export const Card = ({ emoji, title }) => {
   );
 };
 
-Card.propTypes = {};
+Card.propTypes = { title: PropTypes.string, emojiUrl: PropTypes.string };

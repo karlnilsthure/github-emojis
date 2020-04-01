@@ -29,21 +29,36 @@ const fetchData = async () => {
   }
 };
 
-// axios
-//   .get("https://api.github.com/emojis")
-//   .then(response => {
-//     // handle success
-//     console.log(response);
-//   })
-//   .catch(function(error) {
-//     // handle error
-//     console.log(error);
-//   });
+const formatKey = string => {
+  return string.charAt(0).toUpperCase() + string.slice(1).replace(/_/g, " ");
+};
+
+const mapObjectToArray = data => {
+  return Object.keys(data).map(key => {
+    const formatedKey = formatKey(key);
+    return { title: formatedKey, emojiUrl: data[key] };
+  });
+};
 
 app.get("/api/emojis", async (req, res) => {
   const { data } = await fetchData();
+  const emojiArray = mapObjectToArray(data);
 
-  res.send({ data });
+  res.send({ emojiArray });
+});
+
+app.get("/api/emojis/:searchParam", async (req, res) => {
+  const searchParam = req.params.searchParam.toLowerCase();
+
+  const { data } = await fetchData();
+  const pattern = new RegExp(searchParam, "g");
+  const emojiArray = mapObjectToArray(data).filter(emoji => {
+    return pattern.test(emoji.title.toLowerCase());
+  });
+
+  const errorMessage = emojiArray.length ? null : "No match :(";
+
+  res.send({ emojiArray, errorMessage });
 });
 
 app.listen(port, () => console.log(`Example app listening on port ${port}!`));

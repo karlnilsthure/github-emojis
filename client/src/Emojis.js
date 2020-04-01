@@ -1,16 +1,14 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
+import styled from "styled-components";
 import "./Emojis.css";
 import { Card } from "./components/Card";
-import { Button } from "./components/Button";
 import { Search } from "./components/Search";
-import styled from "styled-components";
+import { ErrorMessage } from "./components/ErrorMessage";
+import { GetAllEmojis } from "./components/GetAllEmojis";
 
 const Wrapper = styled.div`
   width: 900px;
   margin: 0 auto;
-  // display: flex;
-  // flex-direction: column;
-  // justify-content: center;
 `;
 
 const CardContainer = styled.div`
@@ -31,52 +29,44 @@ const CTA = styled.div`
   margin-bottom: 40px;
 `;
 
-const RandomWrapper = styled.div``;
-
-function App() {
+const Emojis = () => {
   const [emojis, setEmojis] = useState(null);
   const [isFetching, setIsFetching] = useState(false);
-
-  // useEffect(() => {
-  //   fetch("http://localhost:4000/api/emojis")
-  //     .then(res => res.json())
-  //     .then(res => setEmojis(res.data));
-  // }, []);
-
-  const getAllEmojis = () => {
-    setIsFetching(true);
-    fetch("http://localhost:4000/api/emojis")
-      .then(res => res.json())
-      .then(res => {
-        setEmojis(res.data);
-        setIsFetching(false);
-      });
-  };
+  const [errorMessage, setErrorMessage] = useState(null);
 
   return (
     <Wrapper className="emojis">
       <Title>Github emojis</Title>
 
       <CTA>
-        <RandomWrapper>
-          <h2>Get all emojis</h2>
-          <Button title="Get all" onClick={() => getAllEmojis()} />
-        </RandomWrapper>
-        <Search />
+        <GetAllEmojis
+          setEmojis={setEmojis}
+          setIsFetching={setIsFetching}
+          setErrorMessage={setErrorMessage}
+        />
+        <Search
+          setEmojis={setEmojis}
+          setIsFetching={setIsFetching}
+          setErrorMessage={setErrorMessage}
+        />
       </CTA>
 
       {emojis && (
         <CardContainer>
-          {Object.keys(emojis).map((emojiKey, index) => {
-            return (
-              <Card key={index} title={emojiKey} emoji={emojis[emojiKey]} />
-            );
+          {emojis.map((emoji, index) => {
+            return <Card key={index} {...emoji} />;
           })}
         </CardContainer>
+      )}
+      {errorMessage && (
+        <ErrorMessage
+          message={errorMessage}
+          onClickCallback={() => setErrorMessage(null)}
+        />
       )}
       {isFetching && <span>loading..</span>}
     </Wrapper>
   );
-}
+};
 
-export default App;
+export default Emojis;
